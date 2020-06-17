@@ -32,6 +32,7 @@ namespace OPC_DA_SCADA
         string[] appended = new string[] { "" };
         Queue<string> queue = new Queue<string>();
         int pointsonScreen;
+        bool read;
         public event PropertyChangedEventHandler PropertyChanged;
         public SeriesCollection SeriesCollection { get; set; }
         public string[] Labels
@@ -51,10 +52,17 @@ namespace OPC_DA_SCADA
             {
                 _itemDict = value;
                 Dispatcher.BeginInvoke(new Action(() =>
-                {                   
-                    RunGraf(_itemDict);
+                {   
+                    if (read)
+                    {
+                        RunGraf(_itemDict);
+                    }
+                    else
+                    {
+                        
+                    }
+                    
                 }));
-
             }
         }
 
@@ -70,7 +78,7 @@ namespace OPC_DA_SCADA
             {
                 Title = "Series 4",
                 Values = new ChartValues<double> { 0/*, 3, 2, 4*/ },
-                LineSmoothness = 0, //0: straight lines, 1: really smooth lines
+                LineSmoothness = 0.8, //0: straight lines, 1: really smooth lines
                 PointGeometry = Geometry.Parse("m 25 70.36218 20 -28 -20 22 -8 -6 z"),
                 PointGeometrySize = 5,
                 PointForeground = Brushes.Gray
@@ -87,6 +95,7 @@ namespace OPC_DA_SCADA
 
         private void RunGraf(OrderedDictionary itemDict)
         {
+            
             pointsonScreen++;
             IDictionaryEnumerator myEnumerator = itemDict.GetEnumerator();
             double newValue = 5d;
@@ -97,17 +106,87 @@ namespace OPC_DA_SCADA
                 newTime = myEnumerator.Key.ToString();
             }
             SeriesCollection[0].Values.Add(newValue);
+             
             textBox.Text = pointsonScreen.ToString();
             queue.Enqueue(newTime);
-            if (pointsonScreen > 10)
+            if (pointsonScreen > 60)
             {
                 pointsonScreen--;
                 SeriesCollection[0].Values.RemoveAt(0);
                 queue.Dequeue();
             }
-            Labels = queue.ToArray();
-            
+            Labels = queue.ToArray();           
         }
 
+        private void ShowDays(System.DateTime dateTime, OrderedDictionary itemDict, int hoursStart = 0, int minStart = 0, int hoursEnd = 23, int minEnd = 59)
+        {
+            try
+            {
+                queue.Clear();
+                SeriesCollection[0].Values.Clear();
+                Dictionary<string, string> entries = new Dictionary<string, string>();
+                
+                System.DateTime stopTime = dateTime;
+                stopTime = dateTime.AddHours(hoursEnd);
+                stopTime = stopTime.AddMinutes(minEnd);
+                dateTime = dateTime.AddHours(hoursStart);
+                dateTime = dateTime.AddMinutes(minStart);
+                //stopTime.AddMinutes(minEnd - minStart);
+                ICollection keyCOllection = itemDict.Keys;
+                ICollection valueCollection = itemDict.Values;
+                String[] myKeys = new String[itemDict.Count];
+                String[] myValues = new String[itemDict.Count];
+                keyCOllection.CopyTo(myKeys, 0);
+                valueCollection.CopyTo(myValues, 0);
+                for (int k = 0; k < itemDict.Count; k++)
+                {
+                    entries.Add(myKeys[k], myValues[k]);
+                }
+                int increment =(int)Math.Ceiling(((stopTime - dateTime).TotalSeconds)/720);
+                int i = 0;                
+                while (dateTime < stopTime)
+                {                    
+                    queue.Enqueue(dateTime.ToString());
+                    if (entries.ContainsKey(dateTime.ToString()))
+                    {                       
+                        SeriesCollection[0].Values.Add(Convert.ToDouble(entries[dateTime.ToString()]));
+                    }
+                    else
+                    {
+                        SeriesCollection[0].Values.Add(0d);
+                    }
+                    dateTime = dateTime.AddSeconds(increment);
+                    i++;
+                }
+                Labels = queue.ToArray();
+                textBox.Text = Convert.ToString(increment);
+            }
+            catch(Exception ex) { }
+        }
+
+        private void btrStart_Click(object sender, RoutedEventArgs e)
+        {
+            
+            if (read)
+            {
+                read = false;               
+            }
+                
+            else
+            {
+                queue.Clear();
+                SeriesCollection[0].Values.Clear();
+                //SeriesCollection[0].Values.Add(0d);
+                pointsonScreen = 0;
+                read = true;
+            }
+                               
+        }
+
+        private void btnFromDays_Click(object sender, RoutedEventArgs e)
+        {
+            read = false;
+            ShowDays((System.DateTime)pickedData.SelectedDate, _itemDict, Convert.ToInt32(txtbxStartHour.Text), Convert.ToInt32(txtbxStartMin.Text), Convert.ToInt32(txtbxEndHour.Text), Convert.ToInt32(txtbxEndMin.Text));
+        }
     }
 }

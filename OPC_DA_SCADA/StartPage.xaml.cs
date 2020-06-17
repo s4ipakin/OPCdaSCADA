@@ -3,6 +3,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -95,6 +96,11 @@ namespace OPC_DA_SCADA
 
             //oPC_DA_Client.ItemsChanged += OPC_DA_Client_ItemsChanged;
             textBox.LostKeyboardFocus += TextBox_LostKeyboardFocus;
+            if (!EventLog.SourceExists("MySourceOPC"))
+            {               
+                EventLog.CreateEventSource("MySourceOPC", "MyNewLog");
+                return;
+            }
         }
 
         private void TextBox_LostKeyboardFocus(object sender, KeyboardFocusChangedEventArgs e)
@@ -108,6 +114,41 @@ namespace OPC_DA_SCADA
             if (keyValuePair.Key == key)
             {
                 textBox.Text = keyValuePair.Value;
+            }
+        }
+
+        private void btnAddLog_Click(object sender, RoutedEventArgs e)
+        {
+            using (EventLog eventLog = new EventLog("MyNewLog"))
+            {
+                eventLog.Source = "MySourceOPC";
+                eventLog.WriteEntry("Log message example", EventLogEntryType.Information, 101, 1);
+            }
+        }
+
+        private void btnReadLog_Click(object sender, RoutedEventArgs e)
+        {
+            List<string> events = new List<string>();
+            using (EventLog eventLog = new EventLog("MyNewLog"))
+            {
+                
+                EventLog myLog = new EventLog();
+                myLog.Source = "MySourceOPC";
+                foreach (EventLogEntry entry in myLog.Entries)
+                {
+                    
+                    events.Add(entry.TimeWritten + "  " + entry.Message);
+                }
+            }
+            listBoxEvents.ItemsSource = events;
+        }
+
+        private void btnClearLog_Click(object sender, RoutedEventArgs e)
+        {
+            using (EventLog eventLog = new EventLog("MyNewLog"))
+            {
+                eventLog.Source = "MySourceOPC";
+                eventLog.Clear();
             }
         }
     }

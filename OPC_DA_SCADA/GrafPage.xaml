@@ -10,7 +10,7 @@
       Title="GrafPage">
 
     <Grid>
-        <lvc:CartesianChart Series="{Binding SeriesCollection}" LegendLocation="Right" Margin="0,0,0,89" >
+        <lvc:CartesianChart Series="{Binding SeriesCollection}" LegendLocation="Right" Margin="0,0,0,186" >
             <lvc:CartesianChart.AxisY>
                 <lvc:Axis Title="Sales" LabelFormatter="{Binding YFormatter}" MaxValue="6000"></lvc:Axis>
             </lvc:CartesianChart.AxisY>
@@ -19,5 +19,21 @@
             </lvc:CartesianChart.AxisX>
         </lvc:CartesianChart>
         <TextBox x:Name="textBox" HorizontalAlignment="Right" Height="24" Margin="0,0,513,35" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Bottom" Width="130"/>
+        <DatePicker x:Name="pickedData" HorizontalAlignment="Right" Height="24" Margin="0,0,304,130" VerticalAlignment="Bottom" Width="141"/>
+        <Button x:Name="btrStart" Content="Start" HorizontalAlignment="Left" Height="35" Margin="164,0,0,73" VerticalAlignment="Bottom" Width="139" Click="btrStart_Click"/>
+        <Button x:Name="btnFromDays" Content="From date" HorizontalAlignment="Left" Height="35" Margin="335,0,0,73" VerticalAlignment="Bottom" Width="136" Click="btnFromDays_Click"/>
+        <TextBox x:Name="txtbxStartHour" HorizontalAlignment="Left" Height="24" Margin="540,0,0,130" TextWrapping="Wrap" Text="txtbxStartHour" VerticalAlignment="Bottom" Width="95" RenderTransformOrigin="0.5,0.5">
+            <TextBox.RenderTransform>
+                <TransformGroup>
+                    <ScaleTransform/>
+                    <SkewTransform/>
+                    <RotateTransform Angle="0.185"/>
+                    <TranslateTransform/>
+                </TransformGroup>
+            </TextBox.RenderTransform>
+        </TextBox>
+        <TextBox x:Name="txtbxStartMin" HorizontalAlignment="Left" Height="24" Margin="659,0,0,130" TextWrapping="Wrap" Text="txtbxStartMin" VerticalAlignment="Bottom" Width="93"/>
+        <TextBox x:Name="txtbxEndHour" HorizontalAlignment="Left" Height="29" Margin="540,0,0,70" TextWrapping="Wrap" Text="txtbxEnhHour" VerticalAlignment="Bottom" Width="87"/>
+        <TextBox x:Name="txtbxEndMin" HorizontalAlignment="Left" Height="26" Margin="659,0,0,73" TextWrapping="Wrap" Text="txtbxEndMin" VerticalAlignment="Bottom" Width="93"/>
     </Grid>
 </Page>
