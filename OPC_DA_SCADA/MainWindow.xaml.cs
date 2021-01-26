@@ -51,6 +51,7 @@ namespace OPC_DA_SCADA
         private void StartPage_ItemsChanged(KeyValuePair<string, string> itemDict)
         {
             oPC_DA_Client.WriteValue(itemDict.Key, itemDict.Value);
+            
         }
 
         private void MainWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)

@@ -105,7 +105,7 @@ namespace OPC_DA_SCADA
 
         private void TextBox_LostKeyboardFocus(object sender, KeyboardFocusChangedEventArgs e)
         {
-            KeyValuePair<string, string> item = new KeyValuePair<string, string>("PLC1:.rSetPressure", textBox.Text);          
+            KeyValuePair<string, string> item = new KeyValuePair<string, string>("PLC1:.rPA_WorkTime_Acc", textBox.Text);          
             ItemsChanged?.Invoke(item);
         }
 
@@ -124,6 +124,7 @@ namespace OPC_DA_SCADA
                 eventLog.Source = "MySourceOPC";
                 eventLog.WriteEntry("Log message example", EventLogEntryType.Information, 101, 1);
             }
+            
         }
 
         private void btnReadLog_Click(object sender, RoutedEventArgs e)
